@@ -1,0 +1,106 @@
+<!--ISSUES LEFT:
+-tween fruit falling
+-->	
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Chakra Kitty</title> 
+
+<!-- for CreateJS and ZIMjs http://zimjs.com - free to modify - Dan Zen 2015 -->
+<!-- see http://zimjs.com/templates for more templates and meta tags -->
+<meta name="viewport" content="width=device-width">
+<script>var zon = true; // true for comments from zim code</script>
+<script src="http://d309knd7es5f10.cloudfront.net/zim_1.4.js"></script><!-- take off _min to see code -->
+<script src="http://code.createjs.com/createjs-2014.12.12.min.js"></script>
+<link href="sprites.css" rel="stylesheet" type="text/css" />
+<!-- or can go to zimjs.com and createjs.com for individual modules -->
+
+<script src="maneko.js"></script>
+
+
+<style>
+	body {margin:0px; padding:0px; background-color:#FFF;}
+	#myCanvas {position:absolute; background-color:#D6A4A4;}
+</style>
+
+<script>
+
+// SCALING OPTIONS
+// "none"		sets canvas and stage to dimensions and does not scale if window changes
+// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+// "full"		sets canvas and stage to window size (canvas is actually set to screen size)
+
+var scaling = "full"; // full automatically sets width and height to window size
+var width = null;
+var height = null;
+var stage;
+var stageW;
+var stageH;
+var fruitsBasket;
+var fruits;
+
+var frame = new zim.Frame(scaling, width, height); 
+frame.on("ready", function() {	
+	zog("ready from ZIM Frame");
+	
+	stage = frame.stage;
+	stageW = frame.stageW;
+	stageH = frame.stageH;
+
+	var queue = new createjs.LoadQueue(true);
+    queue.on("complete",prepareGame,true);
+    var fruits = [
+	{ id: "strawberry", src: "fruits/strawberry.png"},
+	{ id: "banana", src: "fruits/banana.png"},
+	{ id: "orange", src: "fruits/orange.png"},
+	{ id: "watermelon", src: "fruits/watermelon.png"}
+	];
+    queue.loadManifest(fruits);
+
+    function prepareGame() {
+	
+		var hLayoutManager = new zim.LayoutManager();
+		var hP = app.makeHorizontalPages(queue, fruits, hLayoutManager);
+		
+		//stage.addChild(hP.main);
+		//stage.addChild(hP.info);
+		//hP.info.x = 100;
+		
+		// left, right, up, down
+		var hPages = new zim.Pages(stage,[
+			{page:hP.main,  swipe:[hP.info, hP.info, null, null]},
+			{page:hP.info,  swipe:[hP.main, hP.main, null, null]}
+		], "slide", 500
+		);
+		stage.addChild(hPages);
+		
+		// put resizing code in here (scaling="full" only)
+		frame.on("resize", function(e) {
+			stageW = frame.stageW;
+			stageH = frame.stageH;
+			
+			hLayoutManager.resize();
+					
+			stage.update();
+		}); // end of resizing
+		
+		// put orientation change code in here
+		frame.on("orientation", function(e) {		
+			stage.update();
+		}); // end of orientation
+		
+		stage.update();
+	}
+	
+}); // end of ready
+
+</script>
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+</html>
