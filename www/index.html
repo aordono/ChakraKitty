@@ -52,18 +52,21 @@ frame.on("ready", function() {
 
 	var queue = new createjs.LoadQueue(true);
     queue.on("complete",prepareGame,true);
-    var fruits = [
+    var manifest = [
+	{ id: "kitty1", src: "chakrakitty.png"},
+	{ id: "kitty2", src: "kittymeditating.png"},
+	{ id: "wood", src: "wood.png"},
 	{ id: "strawberry", src: "fruits/strawberry.png"},
 	{ id: "banana", src: "fruits/banana.png"},
 	{ id: "orange", src: "fruits/orange.png"},
 	{ id: "watermelon", src: "fruits/watermelon.png"}
 	];
-    queue.loadManifest(fruits);
+    queue.loadManifest(manifest);
 
     function prepareGame() {
 	
 		var hLayoutManager = new zim.LayoutManager();
-		var hP = app.makeHorizontalPages(queue, fruits, hLayoutManager);
+		var hP = app.makeHorizontalPages(queue, hLayoutManager);
 		
 		//stage.addChild(hP.main);
 		//stage.addChild(hP.info);
@@ -78,14 +81,31 @@ frame.on("ready", function() {
 		stage.addChild(hPages);
 		
 		// put resizing code in here (scaling="full" only)
-		frame.on("resize", function(e) {
+		frame.on("resize", resize);
+		function resize(e) {
 			stageW = frame.stageW;
 			stageH = frame.stageH;
 			
-			hLayoutManager.resize();
+			//hLayoutManager.resize();
+			
+			hPages.resize();
+			zim.scaleTo(hP.fade, stage, 100, 100, "both"); // stretch
+			zim.scaleTo(hP.table, stage, 100, 100, "both");
+			
+			zim.scaleTo(hP.kitty1, stage, 90, 80);
+			zim.scaleTo(hP.kitty2, stage, 90, 80);
+			hP.kitty1.x = hP.kitty2.x = stageW/2;
+			hP.kitty1.y = hP.kitty2.y = stageH/2;
+			
+			zim.scaleTo(hP.fruitBasket, stage, 100, 100); // do not stretch
+			zim.scaleTo(hP.fruitBasket2, stage, 100, 100); // do not stretch
+			hP.fruitBasket.x = hP.fruitBasket2.x = stageW/2;
+			hP.fruitBasket.y = hP.fruitBasket2.y = stageH/2;
 					
 			stage.update();
-		}); // end of resizing
+		} // end of resizing
+		
+		resize();
 		
 		// put orientation change code in here
 		frame.on("orientation", function(e) {		

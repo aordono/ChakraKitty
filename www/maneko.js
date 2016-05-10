@@ -4,7 +4,7 @@ zog("hi from maneko.js");
 
 var app = function(app) {
 	
-	app.makeHorizontalPages = function(queue, fruits, layoutManager) {
+	app.makeHorizontalPages = function(queue, layoutManager) {
 		
 		zog("pages");
 		
@@ -15,8 +15,8 @@ var app = function(app) {
 		p.main.setBounds(0,0,stageW,stageH);
 		
 
-		var fade = new createjs.Shape();
-		fade.setBounds(0,0,360,640);
+		var fade = p.fade = new createjs.Shape();
+		fade.setBounds(0,0,stageW,stageH);
  		fade.graphics.beginLinearGradientFill(["#DAE2F8", "#D6A4A4"], [0, 1], 0, 0, stageW, stageH)
  		fade.graphics.drawRect(0, 0, stageW, stageH);
  		p.main.addChild(fade);
@@ -33,57 +33,34 @@ var app = function(app) {
 
  		p.main.addChild(fruits);
 		*/
-		var fruitsBasket = new createjs.Container();
-		fruitsBasket.setBounds(0,0,360,640);
-		p.main.addChild(fruitsBasket);
 
-		var fruit;
-		zog(fruits);
-		for (var i=0; i<fruits.length; i++) {
-			fruit = new createjs.Bitmap(queue.getResult(fruits[i].id));
-			console.log(fruits[i].id);
-			fruit.scaleX = 0.75;
-			fruit.scaleY = 0.75;
-			fruit.x = Math.random() * 360 - 20;
-			fruit.y = Math.random() * 640 - 20;
-			fruitsBasket.addChild(fruit);
-
-			stage.update();
-		}
-
-		fruitsBasket.addEventListener("click", takeFruit);
-			function takeFruit(e) {
-				for (var i=0; i<fruits.length; i++){
-				fruitsBasket.removeChild(e.target);
-				p.info.addChild(e.target);
-				stage.update();
-				}
-			}
 				
-		kitty = new createjs.Bitmap("chakrakitty.png");
-		kitty.x = -35;
- 		kitty.y = 10;
- 		kitty.scaleX = 0.7;
- 		kitty.scaleY = 0.7;
+		kitty = p.kitty1 = new createjs.Bitmap(queue.getResult("kitty1"));
+		zim.centerReg(kitty); // scale and position in the scaling event
+		//kitty.x = -35;
+ 		//kitty.y = 10;
+ 		//kitty.scaleX = 0.7;
+ 		//kitty.scaleY = 0.7;
  		p.main.addChild(kitty);
 
-		meditating = new createjs.Bitmap("kittymeditating.png");
- 		meditating.x = -35;
- 		meditating.y = 5;
- 		meditating.scaleX = 0.7;
- 		meditating.scaleY = 0.7;
+		meditating = p.kitty2 = new createjs.Bitmap(queue.getResult("kitty2"));
+		zim.centerReg(meditating);
+ 		//meditating.x = -35;
+ 		//meditating.y = 5;
+ 		//meditating.scaleX = 0.7;
+ 		//meditating.scaleY = 0.7;
 
  		kitty.addEventListener("click", click1); 
  			function click1(event){
  			p.main.removeChild(kitty);
- 			p.main.addChild(meditating);
+ 			p.main.addChildAt(meditating,1); // under fruit
  			stage.update();		
  		}
 
  		meditating.addEventListener("click", click2);
  			function click2(event){
  			p.main.removeChild(meditating);
- 			p.main.addChild(kitty);
+ 			p.main.addChildAt(kitty,1);
  			stage.update();
  		}
 
@@ -98,12 +75,43 @@ var app = function(app) {
 			], 10, "black", false, new createjs.Shape(), stage)								
 		);	
 		*/
+		
+		var fruitsBasket = p.fruitBasket = new createjs.Container();
+		fruitsBasket.setBounds(0,0,stageW,stageH);
+		zim.centerReg(fruitsBasket);
+		p.main.addChild(fruitsBasket);
+
+		var fruit;
+		var fruits = ["strawberry","banana","orange","watermelon"];
+		for (var i=0; i<fruits.length; i++) {
+			fruit = new createjs.Bitmap(queue.getResult(fruits[i]));
+			console.log(fruits[i]);
+			fruit.scaleX = 0.75;
+			fruit.scaleY = 0.75;
+			fruit.x = zim.rand(0, stageW-80); // centered reg
+			fruit.y = zim.rand(0, stageH-80);
+			fruitsBasket.addChild(fruit);
+		}
+
+		fruitsBasket.addEventListener("click", takeFruit);
+		function takeFruit(e) {
+			//for (var i=0; i<fruits.length; i++){
+			fruitsBasket.removeChild(e.target);
+			fruitsBasket2.addChild(e.target);
+			stage.update();
+			//}
+		}
 
 		p.info = new createjs.Container();		
 		p.info.name = "info";		
-		var table = new createjs.Bitmap("wood.png");	
-		table.setBounds(0,0,360,640);
+		var table = p.table = new createjs.Bitmap(queue.getResult("wood"));	
+		table.setBounds(0,0,stageW,stageH);
 		p.info.addChild(table);
+		
+		var fruitsBasket2 = p.fruitBasket2 = new createjs.Container();
+		fruitsBasket2.setBounds(0,0,stageW,stageH);
+		zim.centerReg(fruitsBasket2);
+		p.info.addChild(fruitsBasket2);
 				
 		return p;
 
